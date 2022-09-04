@@ -13,6 +13,7 @@ from tqdm import tqdm, trange
 
 
 def backpack(func):
+    
     def backThread(*args):
         global PALLOW
         global ThreadList
@@ -22,6 +23,7 @@ def backpack(func):
             t.daemon=True
             t.start()
     return backThread
+
 @backpack
 def urldown(url):
     global trytime
@@ -56,10 +58,7 @@ def urldown(url):
         print("%s max try times."%url)
         time.sleep(20)
         return urldown(url)
-
     
-    
-
 class M3U8_object:
     def __init__(self,link,path):
         if not os.path.isdir(path):
@@ -74,6 +73,7 @@ class M3U8_object:
             errorfile=open("error.txt","a")
             errorfile.write(link+"\n")
             errorfile.close()
+            
     def decode(self):
         m3u8name=self.link.split("/")[-1]
         mu=open(m3u8name,"w")
@@ -120,16 +120,13 @@ class M3U8_object:
         for t in ThreadList:
             t.join()
         if os.path.isfile("%s.mp4"%self.link.split("/")[-2]):
-            
-
             for f in [url.split("/")[-1] for url in self.urls]:
                 os.remove(f)
         else:
             if os.system("ffmpeg -allowed_extensions ALL -i \"%s\" -c copy ..\\%s.mp4"%(m3u8name,self.link.split("/")[-2])):
                 print("%s Failed."%(self.link.split("/")[-2]))
-def processfunc(m3u8): 
-    # global waitflag
-    # waitflag=True  
+                
+def processfunc(m3u8):  
     global ThreadList
     ThreadList=[]
     global trytime
@@ -137,32 +134,21 @@ def processfunc(m3u8):
     global PALLOW
     PALLOW=Semaphore(100)
     M3U8_object(m3u8,m3u8.split("/")[-2].split(".")[0]+"_temp")
+    
 if __name__ == "__main__":
     os.chdir("D:\Project")
-    # Processlist=[]
     urllist=[x.strip() for x in open("list.txt","r").readlines()]
     MAX_URLALLOW=16
-    # flag=MAX_URLALLOW
     p=Pool(MAX_URLALLOW)
     for url in urllist:
-        # flag-=1
         if ".mp4" in url:
             p.apply_async(urldown,args=(url,))
-            # p=Process(target=urldown,args=(url,))
         elif ".m3u8" in url:
             p.apply_async(processfunc,args=(url,))
         else:
             p.apply_async(urldown,args=(url+".mp4",))
     p.close()
     p.join()
-        # p.start()
-        # Processlist.append(p)
-        # if flag==0:
-        #     time.sleep(60)
-        #     flag=MAX_URLALLOW
-    
-   
-    # for i in Processlist:
-    #     i.join()
+
 
     
