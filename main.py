@@ -13,8 +13,8 @@ import math
 
 class Translate():
 
-    __appid = '20230219001567014'
-    __appkey = 'Mzw9loC7iANB9XLT49VX'
+    __appid = "YOUR APPID"
+    __appkey = 'YOUR KEY'
     __url = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
 
     def __init__(self,from_lang='en',to_lang='zh'):         
